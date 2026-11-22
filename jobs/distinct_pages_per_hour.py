@@ -19,7 +19,7 @@ SORT_BY = "key"
 
 # "Optimization": remember what we have already sent so we do not send
 # the same page twice. Fewer pairs means a smaller shuffle!
-already_sent = set()
+# already_sent = set()
 
 
 def mapper(line):
@@ -27,10 +27,14 @@ def mapper(line):
     if request is None or not request["path"].lower().endswith(".html"):
         return
     page = request["path"]
-    if page not in already_sent:
-        already_sent.add(page)
-        yield request["hour"], page
+    yield request["hour"], page
+    # if page not in already_sent:
+    #     already_sent.add(page)
+    #     yield request["hour"], page
 
 
 def reducer(key, values):
-    return len(values)
+    """Return the number of distinct pages in ``values``."""
+    if isinstance(values, list):
+        return len(set(values))
+    return 0
